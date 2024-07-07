@@ -27,18 +27,31 @@
       - secret: nova-scheduler-filters-pypi
         name: pypi_info
 
+
+- job:
+    name: nova-scheduler-filters-tox-linters
+    parent: tox
+    vars:
+      tox_envlist: linters
+
+- job:
+    name: nova-scheduler-filters-tox-unit
+    parent: tox
+    vars:
+      tox_envlist: unit
+
 - project:
     merge-mode: squash-merge
     check:
       jobs:
         - nova-scheduler-filters-build
-        - tox-linters
-        - tox-py3
+        - nova-scheduler-filters-tox-linters
+        - nova-scheduler-filters-tox-unit
     gate:
       jobs:
         - nova-scheduler-filters-build
-        - tox-linters
-        - tox-py3
+        - nova-scheduler-filters-tox-linters
+        - nova-scheduler-filters-tox-unit
     release:
       jobs:
         - nova-scheduler-filters-release
