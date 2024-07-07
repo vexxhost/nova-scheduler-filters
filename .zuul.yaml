@@ -1,0 +1,44 @@
+# - secret:
+#     name: nova-scheduler-filters-pypi
+#     data:
+#       api_token: !encrypted/pkcs1-oaep
+#         - eRyk66+lyVIomDFkugHPJSSlTF/WIH1fadNm+DHpIVpz4j50ow2sNJoOivBHRCE68Pc28
+#           w+HFbLa+pYuFCX8ErZU6KnlenruA8om8yprMh+gNoe+mFs/QkZF4sYbSTox1QmP23DhXq
+#           FhcNUk3rZdb3m0YIMU5Ti5UdmOG2MraNTO99QrZ9Qw8nuvbqcKfJgvEsK2IwB+0ZIBZpG
+#           5+mOM7IzVdXyuBQ9BG1Q8ezTB2zGGi3RfD6ImjRzL2iHlJ/aIeh5R4kmzt6e7LEWPAxem
+#           qxHfkSCc7nwnPPju9Uk9aL+1wXAaxqkYKCdwlVubgRzCCC301nnr12eBnksZ7/RT3du87
+#           MAs+RSpRvXV4vRcxvwBfCN651i5dFCCUG4Gk0HgyuSh+Ud4wyWTpWTG/bXzeM7blt3Vrr
+#           sF8hYxJSFXQGYHrpaZANzzlQMbxgbVtijLWwLxMoraR83jSPeNqR4kiR6DzuQQhbnkyz1
+#           QqDMPtrIhPUne0J3poPAzGIQlIy3Wz5yElJXLlSUNPTY+YelA4X98l5g+arplok6Jkl3D
+#           4F/r0d+xISfYf03+I8xbZPgd8Q43TJPqu0dZLFH5p8IctQvuJ5Os3CQ3ehy8M+VGwmoLC
+#           D5bHF2XF/E0LKLehT3T2v1B6weoKJY3C5rGTzekRjJ5UksdJXH3a8l7RVI1uLY=
+
+- job:
+    name: nova-scheduler-filters-build
+    parent: build-python-release
+    vars:
+      release_python: python3
+
+- job:
+    name: nova-scheduler-filters-release
+    parent: nova-scheduler-filters-build
+    post-run: playbooks/release/post.yaml
+    # secrets:
+    #   - secret: nova-scheduler-filters-pypi
+    #     name: pypi_info
+
+- project:
+    merge-mode: squash-merge
+    check:
+      jobs:
+        - nova-scheduler-filters-build
+        - tox-linters
+        - tox-unit
+    gate:
+      jobs:
+        - nova-scheduler-filters-build
+        - tox-linters
+        - tox-unit
+    release:
+      jobs:
+        - nova-scheduler-filters-release

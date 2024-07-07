@@ -1,0 +1,4 @@
+.tox
+.stestr
+.mypy_cache
+__pycache__
