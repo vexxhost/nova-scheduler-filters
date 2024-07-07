@@ -33,12 +33,12 @@
       jobs:
         - nova-scheduler-filters-build
         - tox-linters
-        - tox-unit
+        - tox-py3
     gate:
       jobs:
         - nova-scheduler-filters-build
         - tox-linters
-        - tox-unit
+        - tox-py3
     release:
       jobs:
         - nova-scheduler-filters-release
