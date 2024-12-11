@@ -25,6 +25,19 @@ class TestFailureDomainFilter(test.NoDBTestCase):
         spec_obj = objects.RequestSpec(context=mock.sentinel.ctx, scheduler_hints=None)
         self.assertTrue(self.filt_cls.host_passes(host, spec_obj))
 
+    def test_different_failure_domain_false(self):
+        """
+        Ensures that the filter passes if the scheduler hint is set to false.
+        """
+
+        host = fakes.FakeHostState("host1", "node1", {})
+        spec_obj = objects.RequestSpec(
+            context=mock.sentinel.ctx,
+            scheduler_hints=dict(different_failure_domain=["false"]),
+            instance_group=objects.InstanceGroup(hosts=[]),
+        )
+        self.assertTrue(self.filt_cls.host_passes(host, spec_obj))
+
     def test_no_instance_group(self):
         """
         Ensures that the filter passes if the instance is not part of a

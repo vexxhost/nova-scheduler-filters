@@ -5,6 +5,7 @@ from nova import context as nova_context
 from nova import objects
 from nova.scheduler import filters
 from oslo_log import log as logging
+from oslo_utils import strutils
 
 LOG = logging.getLogger(__name__)
 
@@ -18,8 +19,13 @@ class FailureDomainFilter(filters.BaseHostFilter):
     RUN_ON_REBUILD = False
 
     def host_passes(self, host_state, spec_obj):
-        # Include the host if the scheduler hint is not set
-        if not spec_obj.get_scheduler_hint("different_failure_domain"):
+        # Include the host if the scheduler hint is set to false (or unset)
+        if (
+            strutils.bool_from_string(
+                spec_obj.get_scheduler_hint("different_failure_domain")
+            )
+            is False
+        ):
             return True
 
         # Include the host if the instance is not in a server group
